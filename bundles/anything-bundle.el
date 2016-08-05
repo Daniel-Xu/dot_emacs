@@ -220,12 +220,14 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; (define-key evil-normal-state-map (kbd "RET") 'save-buffer)
 (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-down)
 (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-up)
-
+(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
 
 ;; Make ";" behave like ":" in normal mode
-(define-key evil-normal-state-map (kbd ";") 'evil-ex)
+; As I need to use f to search word, I need to close this
+; (define-key evil-normal-state-map (kbd ";") 'evil-ex)
 (define-key evil-visual-state-map (kbd ";") 'evil-ex)
-(define-key evil-motion-state-map (kbd ";") 'evil-ex)
+;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
 
 ;; Yank whole buffer
 (define-key evil-normal-state-map (kbd "gy") (kbd "gg v G y"))
@@ -236,9 +238,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (eldoc-mode 1)
 (eldoc-mode 0)
 ;; end hack
-(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-(key-chord-define evil-insert-state-map "JK" 'evil-normal-state)
-(key-chord-define evil-insert-state-map "Jk" 'evil-normal-state)
+(key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+(key-chord-define evil-insert-state-map "JJ" 'evil-normal-state)
+(key-chord-define evil-insert-state-map "JJ" 'evil-normal-state)
 
 (define-key evil-insert-state-map "j" #'cofi/maybe-exit-j)
 (define-key evil-insert-state-map "J" #'cofi/maybe-exit-J)
@@ -278,13 +280,15 @@ Repeated invocations toggle between the two most recently open buffers."
 (define-key evil-normal-state-map "gj" 'windmove-down)
 (define-key evil-normal-state-map "gk" 'windmove-up)
 (define-key evil-normal-state-map "gl" 'windmove-right)
+(define-key evil-normal-state-map ",q" 'evil-quit)
 
 (add-hook 'neotree-mode-hook
  (lambda ()
    (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
-   (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+   (define-key evil-normal-state-local-map (kbd "o") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+   (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
          (define-key evil-normal-state-local-map (kbd "ma") 'neotree-create-node)
          (define-key evil-normal-state-local-map (kbd "md") 'neotree-delete-node)
          (define-key evil-normal-state-local-map (kbd "r") 'neotree-refresh)
