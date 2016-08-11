@@ -111,6 +111,15 @@
   (set-buffer-modified-p t))
 
 ;; =============================================================================
+;; snippet
+;; =============================================================================
+(require 'yasnippet)
+(yas-global-mode 1)
+
+(setq yas-snippet-dirs (append yas-snippet-dirs
+                               '("~/snippets")))
+
+;; =============================================================================
 ;; Evil
 ;; =============================================================================
 
@@ -125,7 +134,6 @@
        (setq evil-shift-width 2)
        (setq evil-search-wrap t)
        (setq evil-find-skip-newlines t)
-       (setq evil-move-cursor-back nil)
        (setq evil-mode-line-format 'before)
        (setq evil-esc-delay 0.001)
        (setq evil-cross-lines t))
@@ -306,8 +314,9 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; =============================================================================
 ;; UI
 ;; =============================================================================
-
 (global-linum-mode t)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
 (setq-default truncate-lines t)
 
 (defun linum-format-func (line)
@@ -325,41 +334,14 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; show the column number in the status bar
 (column-number-mode t)
 
-;; Powerline
-(require 'powerline)
-;; (powerline-vim-theme)
-
-
-
-(setq-default mode-line-format
-              '("%e"
-                (:eval
-                 (let* ((active (powerline-selected-window-active))
-                        (mode-line (if active 'mode-line 'mode-line-inactive))
-                        (face1 (if active 'powerline-active1 'powerline-inactive1))
-                        (face2 (if active 'powerline-active2 'powerline-inactive2))
-                        (separator-left (intern (format "powerline-%s-%s"
-                                                        powerline-default-separator
-                                                        (car powerline-default-separator-dir))))
-                        (separator-right (intern (format "powerline-%s-%s"
-                                                         powerline-default-separator
-                                                         (cdr powerline-default-separator-dir))))
-                        (lhs (list (powerline-buffer-id `(mode-line-buffer-id ,mode-line) 'l)
-                                   (when (and vc-mode buffer-file-name)
-                                     (let ((backend (vc-backend buffer-file-name)))
-                                       (when backend
-                                         (concat (powerline-raw "[" mode-line 'l)
-                                                 (powerline-raw (format "%s" (vc-working-revision buffer-file-name backend)))
-                                                 (powerline-raw "]" mode-line)))))))
-                        (rhs (list (powerline-raw global-mode-string mode-line 'r)
-                                   (powerline-raw "%l," mode-line 'l)
-                                   (powerline-raw (format-mode-line '(10 "%c")))
-                                   (powerline-raw (replace-regexp-in-string  "%" "%%" (format-mode-line '(-3 "%p"))) mode-line 'r))))
-                   (concat (powerline-render lhs)
-                           (powerline-fill mode-line (powerline-width rhs))
-                           (powerline-render rhs))))))
-
-
+;; smart line mode -> powerline
+(setq sml/theme 'powerline)
+(sml/setup)
+(setq powerline-arrow-shape 'curve)
+;; (setq powerline-default-separator-dir '(right . left))
+(custom-set-faces
+ '(mode-line ((t (:foreground "#ffffff" :background "#FF6E64" :box nil))))
+ '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#5CC9F5" :box nil)))))
 
 
 ;; Highlight cursor line
@@ -550,7 +532,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq jsx-indent-level 2)
 
 
-
 ;; File handling
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -563,6 +544,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq-default lisp-indent-offset 2)
 (setq-default sgml-basic-offset 2)
 (setq-default nxml-child-indent 2)
+(setq-default js-indent-level 2)
 
 ;; (add-hook 'enh-ruby-mode-hook (lambda () (setq evil-shift-width 2)))
 (add-hook 'ruby-mode-hook (lambda ()
