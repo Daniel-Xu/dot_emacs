@@ -115,9 +115,13 @@
 ;; =============================================================================
 (require 'yasnippet)
 (yas-global-mode 1)
-
+; setup yasnippet snipppet repo
 (setq yas-snippet-dirs (append yas-snippet-dirs
                                '("~/snippets")))
+(define-key yas-minor-mode-map (kbd "<tab>") nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
+;; Set Yasnippet's key binding to c-j
+(define-key yas-minor-mode-map (kbd "C-j") 'yas-expand)
 
 ;; =============================================================================
 ;; Evil
@@ -234,8 +238,6 @@ Repeated invocations toggle between the two most recently open buffers."
   ;; Don't switch back to the ibuffer!!!
   (if (buffer-exists "*Ibuffer*")  (kill-buffer "*Ibuffer*"))
   (switch-to-buffer (other-buffer (current-buffer) 1)))
-(global-set-key "\C-h"  'next-buffer)
-(global-set-key "\C-l"  'previous-buffer)
 
 ;; =============================================================================
 ;; Evil Bindings
