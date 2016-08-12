@@ -183,7 +183,8 @@
   "gb" 'mo-git-blame-current
   "gL" 'magit-log
   "gs" 'magit-status
-  "w"  'kill-buffer
+  "w"  'delete-window
+  "d"  'kill-buffer-and-window'
   "nn" 'neotree-toggle
   "nf" 'neotree-find
   "gk" 'windmove-up
@@ -193,7 +194,16 @@
   "vs" 'split-window-right
   "hs" 'split-window-below
   "s" 'ispell-word
+  "=" 'balance-windows
+  "f" 'delete-other-windows
   "x" 'smex)
+
+
+
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; This is your old M-x.
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; =============================================================================
 ;; Evil Packages
@@ -213,6 +223,9 @@
 (defun fix-underscore-word ()
   (modify-syntax-entry ?_ "w"))
 
+;; =============================================================================
+;; Buffer
+;; =============================================================================
 (defun buffer-exists (bufname)   (not (eq nil (get-buffer bufname))))
 (defun switch-to-previous-buffer ()
   "Switch to previously open buffer.
@@ -221,6 +234,8 @@ Repeated invocations toggle between the two most recently open buffers."
   ;; Don't switch back to the ibuffer!!!
   (if (buffer-exists "*Ibuffer*")  (kill-buffer "*Ibuffer*"))
   (switch-to-buffer (other-buffer (current-buffer) 1)))
+(global-set-key "\C-h"  'next-buffer)
+(global-set-key "\C-l"  'previous-buffer)
 
 ;; =============================================================================
 ;; Evil Bindings
@@ -230,6 +245,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
+(global-set-key "\C-w" 'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-c\C-k" 'kill-region)
 
 ;; Make ";" behave like ":" in normal mode
 ; As I need to use f to search word, I need to close this
