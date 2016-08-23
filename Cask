@@ -36,3 +36,4 @@
 (depends-on "osx-clipboard" :git "git@github.com:chrismccord/osx-clipboard-mode.git")
 (depends-on "yasnippet")
 (depends-on "rainbow-delimiters")
+(depends-on "evil-multiedit")
