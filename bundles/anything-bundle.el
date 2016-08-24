@@ -132,6 +132,30 @@
 (set-face-attribute 'region nil :background "#C0504D")
 
 ;; =============================================================================
+;; line number
+;; =============================================================================
+(global-linum-mode t)
+(defun linum-format-func (line)
+  (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
+     (propertize (format (format "%%%dd " w) line) 'face 'linum)))
+
+;; use customized linum-format: add a addition space after the line number
+(setq linum-format 'linum-format-func)
+
+;; =============================================================================
+;; matchit
+;; =============================================================================
+(require 'evil-matchit)
+
+(defun evilmi-customize-keybinding ()
+  (evil-define-key 'visual evil-matchit-mode-map
+    (kbd "TAB") 'evilmi-jump-items)
+  (evil-define-key 'normal evil-matchit-mode-map
+    (kbd "TAB") 'evilmi-jump-items))
+
+(global-evil-matchit-mode 1)
+
+;; =============================================================================
 ;; snippet
 ;; =============================================================================
 (require 'yasnippet)
@@ -352,17 +376,10 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; =============================================================================
 ;; UI
 ;; =============================================================================
-(global-linum-mode t)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (setq-default truncate-lines t)
 
-(defun linum-format-func (line)
-  (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
-     (propertize (format (format "%%%dd " w) line) 'face 'linum)))
-
-(setq linum-format 'linum-format-func)
-;; use customized linum-format: add a addition space after the line number
 
 ;; Remember the cursor position of files when reopening them
 (setq save-place-file "~/.emacs.d/saveplace")

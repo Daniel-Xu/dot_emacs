@@ -38,3 +38,4 @@
 (depends-on "rainbow-delimiters")
 (depends-on "evil-multiedit")
 (depends-on "expand-region")
+(depends-on "evil-matchit")
