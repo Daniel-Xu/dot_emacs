@@ -37,3 +37,4 @@
 (depends-on "yasnippet")
 (depends-on "rainbow-delimiters")
 (depends-on "evil-multiedit")
+(depends-on "expand-region")

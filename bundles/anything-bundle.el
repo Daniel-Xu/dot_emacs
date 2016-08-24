@@ -115,6 +115,22 @@
 ;; =============================================================================
 (require 'evil-multiedit)
 (evil-multiedit-default-keybinds)
+
+;; =============================================================================
+;; surround
+;; =============================================================================
+(require 'evil-surround)
+(global-evil-surround-mode 1)
+
+;; =============================================================================
+;; expand region
+;; =============================================================================
+(require 'expand-region)
+;; press ,vv to select and v to expand, V to contract
+(eval-after-load "evil" '(setq expand-region-contract-fast-key "V"))
+(evil-leader/set-key "vv" 'er/expand-region)
+(set-face-attribute 'region nil :background "#C0504D")
+
 ;; =============================================================================
 ;; snippet
 ;; =============================================================================
@@ -223,9 +239,6 @@
 ;; optional: disable additional bindings for yanking text
 ;; (setq evil-magit-use-y-for-yank nil)
 (require 'evil-magit)
-
-(require 'evil-surround)
-(global-evil-surround-mode 1)
 
 (require 'evil-visualstar)
 
