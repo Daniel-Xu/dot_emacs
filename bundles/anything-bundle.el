@@ -14,6 +14,8 @@
 (setq projectile-enable-caching t)
 (setq projectile-globally-ignored-directories (append '("node_modules" ".svn") projectile-globally-ignored-directories))
 (projectile-mode t)
+(projectile-global-mode)
+
 ;; Show projectile lists by most recently active
 (setq projectile-sort-order (quote recently-active))
 
@@ -73,8 +75,8 @@
 (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
 (setq company-dabbrev-downcase nil)                  ; Do not convert to lowercase
 (setq company-selection-wrap-around t)               ; continue from top when reaching bottom
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-inf-ruby))
+; (eval-after-load 'company
+  ; '(add-to-list 'company-backends 'company-inf-ruby))
 ;; Hack to trigger candidate list on first TAB, then cycle through candiates with TAB
 (defvar tip-showing nil)
 (eval-after-load 'company
@@ -111,8 +113,14 @@
   (set-buffer-modified-p t))
 
 ;; =============================================================================
+;; lobal settings
+;; =============================================================================
+(setq auto-save-file-name-transforms
+  `((".*" ,temporary-file-directory t)))
+;; =============================================================================
 ;; multiple cursor
 ;; =============================================================================
+; visual select one word and press R, then C to modify or anything else
 (require 'evil-multiedit)
 (evil-multiedit-default-keybinds)
 
@@ -154,7 +162,7 @@
     (kbd "TAB") 'evilmi-jump-items))
 
 (global-evil-matchit-mode 1)
-
+(evil-leader/set-key "vb" 'exchange-point-and-mark)
 ;; =============================================================================
 ;; snippet
 ;; =============================================================================
@@ -219,7 +227,9 @@
 (evil-leader/set-leader ",")
 (evil-leader/set-key
   "." 'find-tag
-  "t" 'projectile-find-file
+  "t" 'helm-projectile-find-file
+  "p" 'helm-projectile-switch-project
+  "m" 'helm-mini
   "b" 'ido-switch-buffer
   "cc" 'evilnc-comment-or-uncomment-lines
   "ag" 'projectile-ag
@@ -245,12 +255,9 @@
   "s" 'ispell-word
   "=" 'balance-windows
   "f" 'delete-other-windows
-  "x" 'smex)
+  "x" 'helm-M-x)
 
 
-
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
 ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
@@ -282,13 +289,26 @@ Repeated invocations toggle between the two most recently open buffers."
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
 ;; =============================================================================
+;; helm - search file
+;; =============================================================================
+(require 'helm-projectile)
+(helm-projectile-on)
+(define-key helm-map (kbd "C-w") 'backward-kill-word)
+(global-set-key (kbd "M-x") 'helm-M-x)
+
+(setq projectile-switch-project-action 'helm-projectile)
+(setq helm-M-x-fuzzy-match t)
+(setq projectile-completion-system 'helm)
+(add-to-list 'projectile-globally-ignored-directories "backup")
+
+;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================
 ;; (define-key evil-normal-state-map (kbd "RET") 'save-buffer)
 (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-down)
 (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-(define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
+(define-key evil-normal-state-map (kbd "C-p") 'helm-projectile-switch-project)
 (global-set-key "\C-w" 'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-c\C-k" 'kill-region)
