@@ -40,3 +40,5 @@
 (depends-on "expand-region")
 (depends-on "evil-matchit")
 (depends-on "helm-projectile")
+(depends-on "helm-ag")
+(depends-on "git-gutter")

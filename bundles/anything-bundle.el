@@ -230,9 +230,10 @@
   "t" 'helm-projectile-find-file
   "p" 'helm-projectile-switch-project
   "m" 'helm-mini
+  "o" 'helm-projectile-find-other-file
   "b" 'ido-switch-buffer
   "cc" 'evilnc-comment-or-uncomment-lines
-  "ag" 'projectile-ag
+  "ag" 'helm-projectile-ag
   "," 'switch-to-previous-buffer
   "gd" 'git-gutter:popup-diff
   "gp" 'git-gutter:previous-hunk
@@ -447,12 +448,6 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; Git Gutter
-;;(global-git-gutter+-mode 1)
-;; If you enable global minor mode
-;; (require 'git-gutter)
-;; (global-git-gutter-mode t)
 
 ;; ;; If you would like to use git-gutter.el and linum-mode
 ;; (git-gutter:linum-setup)
