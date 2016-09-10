@@ -300,6 +300,31 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq projectile-switch-project-action 'helm-projectile)
 (setq helm-M-x-fuzzy-match t)
 (setq projectile-completion-system 'helm)
+(setq helm-split-window-in-side-p t)
+(setq helm-display-header-line nil)
+(set-face-attribute 'helm-source-header nil :height 0.1)
+(helm-autoresize-mode 1)
+(setq helm-autoresize-max-height 30)
+(setq helm-autoresize-min-height 30)
+(setq helm-split-window-in-side-p t)
+(defvar helm-source-header-default-background (face-attribute 'helm-source-header :background))
+(defvar helm-source-header-default-foreground (face-attribute 'helm-source-header :foreground))
+(defvar helm-source-header-default-box (face-attribute 'helm-source-header :box))
+
+(defun helm-toggle-header-line ()
+  (if (> (length helm-sources) 1)
+      (set-face-attribute 'helm-source-header
+                          nil
+                          :foreground helm-source-header-default-foreground
+                          :background helm-source-header-default-background
+                          :box helm-source-header-default-box
+                          :height 1.0)
+    (set-face-attribute 'helm-source-header
+                        nil
+                        :foreground (face-attribute 'helm-selection :background)
+                        :background (face-attribute 'helm-selection :background)
+                        :box nil
+                        :height 0.1)))
 (add-to-list 'projectile-globally-ignored-directories "backup")
 (add-to-list 'projectile-other-file-alist '("html" "js")) ;; switch from html -> js
 (add-to-list 'projectile-other-file-alist '("js" "html")) ;; switch from js -> html
