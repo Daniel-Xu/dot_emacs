@@ -234,12 +234,12 @@
   "cc" 'evilnc-comment-or-uncomment-lines
   "ag" 'projectile-ag
   "," 'switch-to-previous-buffer
-  ; "gg" 'git-gutter+:toggle
-  ; "gd" 'git-gutter+:popup-diff
-  ; "gp" 'git-gutter+:previous-hunk
-  ; "gn" 'git-gutter+:next-hunk
-  ; "gr" 'git-gutter+:revert-hunk
-  "gb" 'mo-git-blame-current
+  "gd" 'git-gutter:popup-diff
+  "gp" 'git-gutter:previous-hunk
+  "gn" 'git-gutter:next-hunk
+  "gr" 'git-gutter:revert-hunk
+  "ga" 'git-gutter:stage-hunk
+  "gb" 'magit-blame
   "gL" 'magit-log
   "gs" 'magit-status
   "w"  'delete-window
@@ -300,6 +300,17 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq helm-M-x-fuzzy-match t)
 (setq projectile-completion-system 'helm)
 (add-to-list 'projectile-globally-ignored-directories "backup")
+(add-to-list 'projectile-other-file-alist '("html" "js")) ;; switch from html -> js
+(add-to-list 'projectile-other-file-alist '("js" "html")) ;; switch from js -> html
+
+;; =============================================================================
+;; Evil Bindings
+;; =============================================================================
+;; Git Gutter
+(global-git-gutter-mode 1)
+(custom-set-variables
+ '(git-gutter:hide-gutter t))
+
 
 ;; =============================================================================
 ;; Evil Bindings
