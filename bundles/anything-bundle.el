@@ -337,13 +337,12 @@ Repeated invocations toggle between the two most recently open buffers."
 (custom-set-variables
  '(git-gutter:hide-gutter t))
 
-
+(add-hook 'magit-post-refresh-hook
+          #'git-gutter:update-all-windows)
 ;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================
 ;; (define-key evil-normal-state-map (kbd "RET") 'save-buffer)
-(define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-down)
-(define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile-switch-project)
 (global-set-key "\C-w" 'backward-kill-word)
