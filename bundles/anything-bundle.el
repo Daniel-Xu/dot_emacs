@@ -75,43 +75,11 @@
 (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
 (setq company-dabbrev-downcase nil)                  ; Do not convert to lowercase
 (setq company-selection-wrap-around t)               ; continue from top when reaching bottom
-; (eval-after-load 'company
-  ; '(add-to-list 'company-backends 'company-inf-ruby))
-;; Hack to trigger candidate list on first TAB, then cycle through candiates with TAB
-(defvar tip-showing nil)
-(eval-after-load 'company
-  '(progn
-     (define-key company-active-map (kbd "TAB")  (lambda ()
-       (interactive)
-       (company-complete-common)
-       (if tip-showing
-         (company-select-next))
-     ))
-     (define-key company-active-map [tab] 'company-select-next)))
-
-(defun company-pseudo-tooltip-on-explicit-action (command)
-  "`company-pseudo-tooltip-frontend', but only on an explicit action."
-  (when (company-explicit-action-p)
-    (setq tip-showing t)
-    (company-pseudo-tooltip-frontend command)))
-
-(defun company-echo-metadata-on-explicit-action-frontend (command)
-  "`company-mode' front-end showing the documentation in the echo area."
-  (pcase command
-    (`post-command (when (company-explicit-action-p)
-                     (company-echo-show-when-idle 'company-fetch-metadata)))
-    (`hide
-      (company-echo-hide)
-      (setq tip-showing nil)
-     )))
-
-(setq company-frontends '(company-pseudo-tooltip-on-explicit-action company-echo-metadata-on-explicit-action-frontend company-preview-if-just-one-frontend))
-;; End TAB cycle hack
-
-(defadvice save-buffer (before save-buffer-always activate)
-  "always save buffer"
-  (set-buffer-modified-p t))
-
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous))
 ;; =============================================================================
 ;; lobal settings
 ;; =============================================================================
@@ -171,15 +139,9 @@
 ; setup yasnippet snipppet repo
 (setq yas-snippet-dirs (append yas-snippet-dirs
                                '("~/snippets")))
-(define-key yas-minor-mode-map (kbd "<tab>") nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
-;; Set Yasnippet's key binding to c-j
-(define-key yas-minor-mode-map (kbd "C-j") 'yas-expand)
-
 ;; =============================================================================
 ;; Evil
 ;; =============================================================================
-
 (osx-clipboard-mode +1)
 
 (require 'evil)
@@ -339,6 +301,97 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (add-hook 'magit-post-refresh-hook
           #'git-gutter:update-all-windows)
+
+;; =============================================================================
+;; elm configuration
+;; =============================================================================
+;; C-c C-c will compile the buffer
+;; C-c C-n will preview it in a browser
+;; C-c C-d will show the doc of a function
+;; C-c M-k opens the package catalog
+;; C-c C-l open repl
+(require 'elm-mode)
+(setq elm-format-on-save t)
+(add-to-list 'company-backends 'company-elm)
+;; =============================================================================
+;; make tab work
+;; =============================================================================
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+    (backward-char 1)
+    (if (looking-at "->") t nil)))))
+
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (cond
+   ((minibufferp)
+    (minibuffer-complete))
+   (t
+    (indent-for-tab-command)
+    (if (or (not yas/minor-mode)
+        (null (do-yas-expand)))
+    (if (check-expansion)
+        (progn
+          (company-manual-begin)
+          (if (null company-candidates)
+          (progn
+            (company-abort)
+            (indent-for-tab-command)))))))))
+
+(defun tab-complete-or-next-field ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+      (null (do-yas-expand)))
+      (if company-candidates
+      (company-complete-selection)
+    (if (check-expansion)
+      (progn
+        (company-manual-begin)
+        (if (null company-candidates)
+        (progn
+          (company-abort)
+          (yas-next-field))))
+      (yas-next-field)))))
+
+(defun expand-snippet-or-complete-selection ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+      (null (do-yas-expand))
+      (company-abort))
+      (company-complete-selection)))
+
+(defun abort-company-or-yas ()
+  (interactive)
+  (if (null company-candidates)
+      (yas-abort-snippet)
+    (company-abort)))
+
+(global-set-key [tab] 'tab-indent-or-complete)
+(global-set-key (kbd "TAB") 'tab-indent-or-complete)
+(global-set-key [(control return)] 'company-complete-common)
+
+(define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
+(define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
+
+(define-key yas-minor-mode-map [tab] nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
+
+(define-key yas-keymap [tab] 'tab-complete-or-next-field)
+(define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+(define-key yas-keymap [(control tab)] 'yas-next-field)
+
+;; =============================================================================
+;; fly check
+;; =============================================================================
+(require 'flycheck)
+
 ;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================

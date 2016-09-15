@@ -42,3 +42,5 @@
 (depends-on "helm-projectile")
 (depends-on "helm-ag")
 (depends-on "git-gutter")
+(depends-on "elm-mode")
+(depends-on "flycheck")
