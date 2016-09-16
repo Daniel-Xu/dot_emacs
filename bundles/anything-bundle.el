@@ -192,6 +192,7 @@
   "s" 'ispell-word
   "=" 'balance-windows
   "f" 'delete-other-windows
+  "ar" 'align-regexp
   "x" 'helm-M-x)
 
 ;; This is your old M-x.
