@@ -5,7 +5,6 @@
 
 ;;; Code:
 
-(setq make-backup-files nil)
 (menu-bar-mode -1)
 
 (smex-initialize)
@@ -38,6 +37,7 @@
 (setq sp-highlight-wrap-tag-overlay nil)
 ;; Do not use default slight delay
 (setq show-paren-delay 0)
+(setq evil-want-fine-undo t)
 
 ;;==============================================================================
 ;; Autocomplete with company-mode
@@ -57,8 +57,8 @@
 ;; =============================================================================
 ;; lobal settings
 ;; =============================================================================
-(setq auto-save-file-name-transforms
-  `((".*" ,temporary-file-directory t)))
+;; (setq auto-save-default nil)
+;; (setq make-backup-files nil)
 ;; =============================================================================
 ;; multiple cursor
 ;; =============================================================================
@@ -112,7 +112,7 @@
 (yas-global-mode 1)
 ; setup yasnippet snipppet repo
 (setq yas-snippet-dirs (append yas-snippet-dirs
-                               '("~/snippets")))
+                               '("~/.emacs.d/snippets")))
 ;; =============================================================================
 ;; Evil
 ;; =============================================================================
