@@ -390,7 +390,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; =============================================================================
 ;; fly check
 ;; =============================================================================
-(require 'flycheck)
+;; (require 'flycheck)
 
 ;; =============================================================================
 ;; Evil Bindings
@@ -677,17 +677,17 @@ Repeated invocations toggle between the two most recently open buffers."
 (modify-syntax-entry (string-to-char "_") "w" elixir-mode-syntax-table)
 (modify-syntax-entry (string-to-char "_") "w" coffee-mode-syntax-table)
 
-;; JSX
-;; (require 'web-mode)
-;; (add-to-list 'auto-mode-alist '("\\.js[x]?$" . web-mode))
-;; (defadvice web-mode-highlight-part (around tweak-jsx activate)
-;;   (if (equal web-mode-content-type "jsx")
-;;       (let ((web-mode-enable-part-face nil))
-;;         ad-do-it)
-;;     ad-do-it))
-(require 'jsx-mode)
-(add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . jsx-mode))
-(setq jsx-indent-level 2)
+;; ;; JSX
+;; ;; (require 'web-mode)
+;; ;; (add-to-list 'auto-mode-alist '("\\.js[x]?$" . web-mode))
+;; ;; (defadvice web-mode-highlight-part (around tweak-jsx activate)
+;; ;;   (if (equal web-mode-content-type "jsx")
+;; ;;       (let ((web-mode-enable-part-face nil))
+;; ;;         ad-do-it)
+;; ;;     ad-do-it))
+;; (require 'jsx-mode)
+;; (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . jsx-mode))
+;; (setq jsx-indent-level 2)
 
 
 ;; File handling
@@ -727,8 +727,8 @@ Repeated invocations toggle between the two most recently open buffers."
                             (setq evil-shift-width 2)
                             (setq tab-width 2)))
 
-(add-hook 'jsx-mode-hook (lambda ()
-                            (emmet-mode t)))
+;; (add-hook 'jsx-mode-hook (lambda ()
+                            ;; (emmet-mode t)))
 
 (add-hook 'css-mode-hook (lambda ()
                             (setq evil-shift-width 2)
