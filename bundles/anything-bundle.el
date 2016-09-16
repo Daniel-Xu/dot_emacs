@@ -21,12 +21,10 @@
 
 (setq ido-decorations (quote ("\n↪ "     "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
 
-
 (require 'flx-ido)
 (ido-mode 1)
 (ido-everywhere 1)
 (flx-ido-mode 1)
-
 
 ;; Parens handling
 ;; Show and create matching parens automatically
@@ -40,30 +38,6 @@
 (setq sp-highlight-wrap-tag-overlay nil)
 ;; Do not use default slight delay
 (setq show-paren-delay 0)
-
-;; Autocomplete
-;; (require 'auto-complete-config)
-;; (ac-config-default)
-;; (setq ac-ignore-case nil)
-;; (add-to-list 'ac-modes 'enh-ruby-mode)
-;; (add-to-list 'ac-modes 'web-mode)
-;; (add-to-list 'ac-modes 'elixir-mode)
-;; (auto-complete-mode t)
-;; ;; Do not autocomplete on RET
-;; (define-key ac-completing-map [return] nil)
-;; (define-key ac-completing-map "\r" nil)
-;; ;; autocomplete within strings
-;; (setq ac-disable-faces nil)
-;; (custom-set-variables
-;;   '(ac-etags-requires 1))
-
-;; (eval-after-load "etags"
-;;   '(progn
-;;       (ac-etags-setup)))
-
-;; (add-hook 'c-mode-common-hook 'ac-etags-ac-setup)
-;; (add-hook 'enh-ruby-mode-hook 'ac-etags-ac-setup)
-;; (add-hook 'elixir-mode-hook 'ac-etags-ac-setup)
 
 ;;==============================================================================
 ;; Autocomplete with company-mode
@@ -220,7 +194,6 @@
   "f" 'delete-other-windows
   "x" 'helm-M-x)
 
-
 ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
@@ -312,7 +285,9 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; C-c C-l open repl
 (require 'elm-mode)
 (setq elm-format-on-save t)
+(add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
 (add-to-list 'company-backends 'company-elm)
+
 ;; =============================================================================
 ;; make tab work
 ;; =============================================================================
@@ -395,18 +370,11 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================
-;; (define-key evil-normal-state-map (kbd "RET") 'save-buffer)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile-switch-project)
 (global-set-key "\C-w" 'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-c\C-k" 'kill-region)
-
-;; Make ";" behave like ":" in normal mode
-; As I need to use f to search word, I need to close this
-; (define-key evil-normal-state-map (kbd ";") 'evil-ex)
-(define-key evil-visual-state-map (kbd ";") 'evil-ex)
-;; (define-key evil-motion-state-map (kbd ";") 'evil-ex)
 
 ;; Yank whole buffer
 (define-key evil-normal-state-map (kbd "gy") (kbd "gg v G y"))
@@ -489,7 +457,6 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (setq-default truncate-lines t)
 
-
 ;; Remember the cursor position of files when reopening them
 (setq save-place-file "~/.emacs.d/saveplace")
 (setq-default save-place t)
@@ -506,7 +473,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (custom-set-faces
  '(mode-line ((t (:foreground "#ffffff" :background "#FF6E64" :box nil))))
  '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#5CC9F5" :box nil)))))
-
 
 ;; Highlight cursor line
 (global-hl-line-mode t)
@@ -558,44 +524,6 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; (defun change-major-mode-hook () (modify-syntax-entry ?_ "w"))
 (setq inhibit-startup-screen t)
 
-; (defun evil-move-point-by-word (dir)
-;   "Used internally by evil
-;
-; A pure-vim emulation of move-word runs slow, but emacs forward-word
-; does not recognize underscores as word boundaries. This method calls
-; Emacs native forward-word, and then repeats if it detects it stopped
-; on an underscore."
-;   (let ((success (forward-word dir))
-;         (fn (if (= 1 dir) 'looking-at 'looking-back)))
-;
-;     (if (and success (funcall fn "_"))
-;         (evil-move-point-by-word dir)
-;       success)))
-;
-; (defun evil-forward-word (&optional count)
-;   "Move by words.
-; Moves point COUNT words forward or (- COUNT) words backward if
-; COUNT is negative. This function is the same as `forward-word'
-; but returns the number of words by which point could *not* be
-; moved."
-;   (setq count (or count 1))
-;   (let* ((dir (if (>= count 0) +1 -1))
-;          (count (abs count)))
-;     (while (and (> count 0)
-;                 (evil-move-point-by-word dir))
-;       (setq count (1- count)))
-;     count))
-;
-; (evil-define-union-move evil-move-word (count)
-;   "Move by words."
-;   (evil-move-chars "^ \t\r\n[:word:]_" count)
-;   (let ((word-separating-categories evil-cjk-word-separating-categories)
-;         (word-combining-categories evil-cjk-word-combining-categories))
-;     (evil-forward-word count))
-;   (evil-move-empty-lines count))
-
-
-
 ;; =============================================================================
 ;; Custom Packages
 ;; =============================================================================
@@ -605,16 +533,6 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (setq initial-major-mode 'elixir-mode)
 (setq initial-scratch-message "# scratch")
-
-; (let ((bg (face-attribute 'default :background)))
-;   (custom-set-faces
-;     `(company-scrollbar-bg ((t (:background "#151515"))))
-;     `(company-scrollbar-fg ((t (:background "#151515"))))
-;     `(company-tooltip ((t (:foreground "#f5f5f5" :background "#1c1c1c"))))
-;     `(company-preview-common ((t :background "gray10" :foreground "#929290")))
-;     `(company-tooltip-common ((t (:foreground "#cc6666" :background "#151515"))))
-;     `(company-tooltip-selection ((t (:background "#363636"))))))
-
 
 (add-to-list 'load-path "~/.emacs.d/vendor/longlines/")
 (require 'longlines)
@@ -631,15 +549,6 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;     (ruby-end-mode +1)))
 
 (load "~/.emacs.d/vendor/change-case.el")
-
-;;; esc quits
-;; (define-key evil-normal-state-map (kbd "ESC") 'keyboard-quit)
-;; (define-key evil-visual-state-map (kbd "ESC") 'keyboard-quit)
-;; (define-key minibuffer-local-map (kbd "ESC") 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-ns-map (kbd "ESC") 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-completion-map (kbd "ESC") 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-must-match-map (kbd "ESC") 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-isearch-map (kbd "ESC") 'minibuffer-keyboard-quit)
 
 ;; Enable mouse support
 (unless window-system
