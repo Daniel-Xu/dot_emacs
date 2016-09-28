@@ -37,8 +37,18 @@
 (setq sp-highlight-wrap-tag-overlay nil)
 ;; Do not use default slight delay
 (setq show-paren-delay 0)
-(setq evil-want-fine-undo t)
+(setq evil-want-fine-undo nil)
+(setq evil-in-single-undo t)
+(global-auto-revert-mode t)
 
+
+;;==============================================================================
+;; web-mode
+;;==============================================================================
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 ;;==============================================================================
 ;; Autocomplete with company-mode
 ;;==============================================================================
@@ -105,6 +115,7 @@
 
 (global-evil-matchit-mode 1)
 (evil-leader/set-key "vb" 'exchange-point-and-mark)
+
 ;; =============================================================================
 ;; snippet
 ;; =============================================================================
@@ -167,6 +178,7 @@
   "p" 'helm-projectile-switch-project
   "m" 'helm-mini
   "o" 'helm-projectile-find-other-file
+  "o" 'projectile-toggle-between-implementation-and-test
   "b" 'ido-switch-buffer
   "cc" 'evilnc-comment-or-uncomment-lines
   "ag" 'helm-projectile-ag
@@ -276,6 +288,28 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-hook 'magit-post-refresh-hook
           #'git-gutter:update-all-windows)
 
+
+;; =============================================================================
+;; ember-mode
+;; =============================================================================
+(require 'ember-mode)
+
+(add-hook 'web-mode-hook (lambda () (ember-mode t)))
+(add-hook 'js-mode-hook (lambda () (ember-mode t)))
+
+;; =============================================================================
+;; shell
+;; =============================================================================
+(defun my-shell (arg)
+  (interactive "p")
+  (let ((arg (or arg 1)))
+    (shell (format "*sh%d*" arg))))
+
+(global-set-key (kbd "C-c 1") '(lambda () (interactive) (my-shell 1)))
+(global-set-key (kbd "C-c 2") '(lambda () (interactive) (my-shell 2)))
+(global-set-key (kbd "C-c 3") '(lambda () (interactive) (my-shell 3)))
+(global-set-key (kbd "C-c 4") '(lambda () (interactive) (my-shell 4)))
+(global-set-key (kbd "C-c 5") '(lambda () (interactive) (my-shell 5)))
 ;; =============================================================================
 ;; elm configuration
 ;; =============================================================================
@@ -435,6 +469,8 @@ Repeated invocations toggle between the two most recently open buffers."
    (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "o") 'neotree-enter)
+   (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-horizontal-split)
+   (define-key evil-normal-state-local-map (kbd "v") 'neotree-enter-vertical-split)
    (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
          (define-key evil-normal-state-local-map (kbd "ma") 'neotree-create-node)
@@ -542,13 +578,14 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-to-list 'load-path "~/.emacs.d/vendor/alchemist.el")
 (require 'alchemist)
 
-;; (add-to-list 'elixir-mode-hook
-;;   (defun auto-activate-ruby-end-mode-for-elixir-mode ()
-;;     (set (make-variable-buffer-local 'ruby-end-expand-keywords-before-re)
-;;       "\\(?:^\\|\\s-+\\)\\(?:do\\)")
-;;     (set (make-variable-buffer-local 'ruby-end-check-statement-modifiers) nil)
-;;     (ruby-end-mode +1)))
-
+(sp-with-modes '(elixir-mode)
+  (sp-local-pair "fn" "end"
+         :when '(("SPC" "RET"))
+         :actions '(insert navigate))
+  (sp-local-pair "do" "end"
+         :when '(("SPC" "RET"))
+         :post-handlers '(sp-ruby-def-post-handler)
+         :actions '(insert navigate)))
 (load "~/.emacs.d/vendor/change-case.el")
 
 ;; Enable mouse support
@@ -633,9 +670,14 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (add-hook 'html-mode-hook (lambda ()
                             (emmet-mode t)
-                            (sgml-mode 0)
                             (setq evil-shift-width 2)
                             (setq tab-width 2)))
+
+(add-hook 'web-mode-hook (lambda ()
+                           (emmet-mode t)
+                           (setq evil-shift-width 2)
+                           (setq tab-width 2)))
+
 
 ;; (add-hook 'jsx-mode-hook (lambda ()
                             ;; (emmet-mode t)))

@@ -44,3 +44,5 @@
 (depends-on "git-gutter")
 (depends-on "elm-mode")
 (depends-on "flycheck")
+(depends-on "ember-mode")
+(depends-on "web-mode")
