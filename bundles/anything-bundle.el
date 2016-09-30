@@ -247,7 +247,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (helm-projectile-on)
 (define-key helm-map (kbd "C-w") 'backward-kill-word)
 (global-set-key (kbd "M-x") 'helm-M-x)
-
+(define-key helm-map (kbd "C-o") 'helm-ff-run-switch-other-window)
 (setq projectile-switch-project-action 'helm-projectile)
 (setq helm-M-x-fuzzy-match t)
 (setq projectile-completion-system 'helm)
@@ -438,10 +438,6 @@ directory to make multiple eshell windows easier."
 
 (setq key-chord-two-keys-delay 0.075)
 (key-chord-mode 1)
-;; Hack to fix eldoc errors when `jk` is triggered
-(eldoc-mode 1)
-(eldoc-mode 0)
-;; end hack
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
 (key-chord-define evil-insert-state-map "JJ" 'evil-normal-state)
 (key-chord-define evil-insert-state-map "JJ" 'evil-normal-state)
@@ -502,7 +498,7 @@ directory to make multiple eshell windows easier."
          (define-key evil-normal-state-local-map (kbd "mm") 'neotree-rename-node)
 ))
 
-;; Map ctrl-j/k to up down in ido selections
+;; Map ctrl-n/p to up down in ido selections
 (add-hook 'ido-setup-hook
   (lambda ()
     (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
