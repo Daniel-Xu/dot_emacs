@@ -192,6 +192,7 @@
   "gr" 'git-gutter:revert-hunk
   "ga" 'git-gutter:stage-hunk
   "gb" 'magit-blame
+  "gc" 'magit-checkout-file
   "gL" 'magit-log
   "gs" 'magit-status
   "w"  'delete-window
@@ -291,6 +292,8 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-hook 'magit-post-refresh-hook
           #'git-gutter:update-all-windows)
 
+(add-hook 'magit-refresh-buffer-hook
+          #'git-gutter:update-all-windows)
 
 ;; =============================================================================
 ;; ember-mode
