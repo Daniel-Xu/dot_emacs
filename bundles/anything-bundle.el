@@ -176,10 +176,13 @@
   "." 'find-tag
   "t" 'helm-projectile-find-file
   "p" 'helm-projectile-switch-project
-  "m" 'helm-mini
+  "b" 'helm-mini
   "o" 'helm-projectile-find-other-file
   "o" 'projectile-toggle-between-implementation-and-test
-  "b" 'ido-switch-buffer
+  "mh" 'evil-window-move-far-left
+  "mj" 'evil-window-move-very-bottom
+  "mk" 'evil-window-move-very-top
+  "ml" 'evil-window-move-far-right
   "cc" 'evilnc-comment-or-uncomment-lines
   "ag" 'helm-projectile-ag
   "," 'switch-to-previous-buffer
@@ -300,16 +303,35 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; =============================================================================
 ;; shell
 ;; =============================================================================
-(defun my-shell (arg)
-  (interactive "p")
-  (let ((arg (or arg 1)))
-    (shell (format "*sh%d*" arg))))
+(defun eshell/clear ()
+  "Clear the eshell buffer."
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (eshell-send-input)))
 
-(global-set-key (kbd "C-c 1") '(lambda () (interactive) (my-shell 1)))
-(global-set-key (kbd "C-c 2") '(lambda () (interactive) (my-shell 2)))
-(global-set-key (kbd "C-c 3") '(lambda () (interactive) (my-shell 3)))
-(global-set-key (kbd "C-c 4") '(lambda () (interactive) (my-shell 4)))
-(global-set-key (kbd "C-c 5") '(lambda () (interactive) (my-shell 5)))
+(defun eshell-here (arg)
+  "Opens up a new shell in the directory associated with the
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
+  (interactive)
+  (let* ((parent (if (buffer-file-name)
+                   (file-name-directory (buffer-file-name))
+                   default-directory))
+          (height (/ (window-total-height) 3))
+          (name   (car (last (split-string parent "/" t)))))
+    (split-window-vertically height)
+    (other-window 1)
+    (let ((arg (or arg 1)))
+      (eshell (format "*eshell%d*" arg)))
+    (insert (concat "ls"))
+    (eshell-send-input)))
+
+
+(global-set-key (kbd "C-c 1") '(lambda () (interactive) (eshell-here 1)))
+(global-set-key (kbd "C-c 2") '(lambda () (interactive) (eshell-here 2)))
+(global-set-key (kbd "C-c 3") '(lambda () (interactive) (eshell-here 3)))
+(global-set-key (kbd "C-c 4") '(lambda () (interactive) (eshell-here 4)))
+(global-set-key (kbd "C-c 5") '(lambda () (interactive) (eshell-here 5)))
 ;; =============================================================================
 ;; elm configuration
 ;; =============================================================================
@@ -469,6 +491,7 @@ Repeated invocations toggle between the two most recently open buffers."
    (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
    (define-key evil-normal-state-local-map (kbd "o") 'neotree-enter)
+   (define-key evil-normal-state-local-map (kbd "go") 'neotree-quick-look)
    (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-horizontal-split)
    (define-key evil-normal-state-local-map (kbd "v") 'neotree-enter-vertical-split)
    (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
@@ -482,8 +505,8 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; Map ctrl-j/k to up down in ido selections
 (add-hook 'ido-setup-hook
   (lambda ()
-    (define-key ido-completion-map (kbd "C-j") 'ido-next-match)
-    (define-key ido-completion-map (kbd "C-k") 'ido-prev-match)
+    (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
+    (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
 ))
 
 
