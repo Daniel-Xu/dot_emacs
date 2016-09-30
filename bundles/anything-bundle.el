@@ -319,7 +319,7 @@ directory to make multiple eshell windows easier."
                    default-directory))
           (height (/ (window-total-height) 3))
           (name   (car (last (split-string parent "/" t)))))
-    (split-window-vertically height)
+    (split-window-vertically (- height))
     (other-window 1)
     (let ((arg (or arg 1)))
       (eshell (format "*eshell%d*" arg)))
@@ -509,6 +509,11 @@ directory to make multiple eshell windows easier."
 ;; =============================================================================
 ;; UI
 ;; =============================================================================
+;; window resize
+;; C-w -  or n C-w -
+;; C-w +
+;; C-w >
+;; C-w <
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (setq-default truncate-lines t)
