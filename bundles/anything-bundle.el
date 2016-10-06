@@ -67,8 +67,9 @@
 ;; =============================================================================
 ;; lobal settings
 ;; =============================================================================
-;; (setq auto-save-default nil)
-;; (setq make-backup-files nil)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(setq create-lockfiles nil)
 ;; =============================================================================
 ;; multiple cursor
 ;; =============================================================================
@@ -115,6 +116,16 @@
 
 (global-evil-matchit-mode 1)
 (evil-leader/set-key "vb" 'exchange-point-and-mark)
+
+;; =============================================================================
+;; align regexp
+;; =============================================================================
+(defun align-repeat (start end regexp)
+  "Repeat alignment with respect to
+     the given regular expression."
+  (interactive "r\nsAlign regexp: ")
+  (align-regexp start end
+    (concat "\\(\\s-*\\)" regexp) 1 0 t))
 
 ;; =============================================================================
 ;; snippet
@@ -444,8 +455,28 @@ directory to make multiple eshell windows easier."
 ;; =============================================================================
 ;; fly check
 ;; =============================================================================
-;; (require 'flycheck)
+(require 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'js-mode-hook #'flycheck-mode)
+(add-hook 'web-mode-hook #'flycheck-mode)
+(add-hook 'ruby-mode-hook #'flycheck-mode)
+(add-hook 'elixir-mode-hook #'flycheck-mode)
+(setq flycheck-display-errors-function 'flycheck-display-error-messages-unless-error-list)
+(setq flycheck-display-errors-delay 0)
+(setq flycheck-check-syntax-automatically '(save mode-enabled))
+(setq flycheck-standard-error-navigation nil)
+(setq flycheck-indication-mode 'left-fringe)
+;; remove useless warnings
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
+(defun flycheck-toggle ()
+  (interactive)
+  (if (= (length flycheck-current-errors) 0)
+    (progn
+      (message "syntax checking...")
+      (flycheck-buffer))
+    (flycheck-clear)))
 ;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================

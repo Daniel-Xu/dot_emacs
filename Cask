@@ -46,3 +46,4 @@
 (depends-on "flycheck")
 (depends-on "ember-mode")
 (depends-on "web-mode")
+(depends-on "switch-window")
