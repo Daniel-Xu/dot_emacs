@@ -177,7 +177,6 @@
   "t" 'helm-projectile-find-file
   "p" 'helm-projectile-switch-project
   "b" 'helm-mini
-  "o" 'helm-projectile-find-other-file
   "o" 'projectile-toggle-between-implementation-and-test
   "mh" 'evil-window-move-far-left
   "mj" 'evil-window-move-very-bottom
@@ -203,17 +202,36 @@
   "gj" 'windmove-down
   "gl" 'windmove-right
   "gh" 'windmove-left
-  "vs" 'split-window-right
-  "hs" 'split-window-below
+  "vs" 'split-v-and-move
+  "hs" 'split-h-and-move
+  "mm" 'switch-window
   "s" 'ispell-word
   "=" 'balance-windows
-  "f" 'delete-other-windows
+  "ff" 'delete-other-windows
+  "SPC" 'flycheck-toggle
+  "fr" 'flycheck-first-error
+  "fn" 'flycheck-next-error
+  "fp" 'flycheck-previous-error
   "ar" 'align-regexp
+  "ll" (lambda () (interactive) (enlarge-window-horizontally 30))
+  "hh" (lambda () (interactive) (enlarge-window-horizontally -30))
   "x" 'helm-M-x)
 
 ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
+;; =============================================================================
+;; Evil function
+;; =============================================================================
+(defun split-v-and-move ()
+  (interactive)
+  (split-window-right)
+  (windmove-right))
+
+(defun split-h-and-move ()
+  (interactive)
+  (split-window-below)
+  (windmove-down))
 ;; =============================================================================
 ;; Evil Packages
 ;; =============================================================================
@@ -280,6 +298,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-to-list 'projectile-globally-ignored-directories "backup")
 (add-to-list 'projectile-other-file-alist '("html" "js")) ;; switch from html -> js
 (add-to-list 'projectile-other-file-alist '("js" "html")) ;; switch from js -> html
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; =============================================================================
 ;; Evil Bindings
@@ -360,8 +379,8 @@ directory to make multiple eshell windows easier."
     (if (looking-at "->") t nil)))))
 
 (defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
+  (let ((yas-fallback-behavior 'return-nil))
+    (yas-expand)))
 
 (defun tab-indent-or-complete ()
   (interactive)
@@ -370,7 +389,7 @@ directory to make multiple eshell windows easier."
     (minibuffer-complete))
    (t
     (indent-for-tab-command)
-    (if (or (not yas/minor-mode)
+    (if (or (not yas-minor-mode)
         (null (do-yas-expand)))
     (if (check-expansion)
         (progn
@@ -382,7 +401,7 @@ directory to make multiple eshell windows easier."
 
 (defun tab-complete-or-next-field ()
   (interactive)
-  (if (or (not yas/minor-mode)
+  (if (or (not yas-minor-mode)
       (null (do-yas-expand)))
       (if company-candidates
       (company-complete-selection)
@@ -397,7 +416,7 @@ directory to make multiple eshell windows easier."
 
 (defun expand-snippet-or-complete-selection ()
   (interactive)
-  (if (or (not yas/minor-mode)
+  (if (or (not yas-minor-mode)
       (null (do-yas-expand))
       (company-abort))
       (company-complete-selection)))
