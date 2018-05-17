@@ -54,7 +54,7 @@
 ;;==============================================================================
 (global-company-mode t)
 (setq company-tooltip-limit 12)                      ; bigger popup window
-(setq company-idle-delay .1)                         ; decrease delay before autocompletion popup shows
+(setq company-idle-delay 0)                         ; decrease delay before autocompletion popup shows
 (setq company-echo-delay 0)                          ; remove annoying blinking
 (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
 (setq company-dabbrev-downcase nil)                  ; Do not convert to lowercase
@@ -74,6 +74,7 @@
 ;; multiple cursor
 ;; =============================================================================
 ; visual select one word and press R, then C to modify or anything else
+;; option + d to select one by one
 (require 'evil-multiedit)
 (evil-multiedit-default-keybinds)
 
@@ -126,6 +127,13 @@
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end
     (concat "\\(\\s-*\\)" regexp) 1 0 t))
+
+(defun align-whitespace (start end)
+  "Align columns by whitespace"
+  (interactive "r")
+  (align-regexp start end
+                "\\(\\s-*\\)\\s-" 1 0 t))
+
 
 ;; =============================================================================
 ;; snippet
@@ -196,18 +204,18 @@
   "cc" 'evilnc-comment-or-uncomment-lines
   "ag" 'helm-projectile-ag
   "," 'switch-to-previous-buffer
-  "gd" 'git-gutter:popup-diff
-  "gp" 'git-gutter:previous-hunk
-  "gn" 'git-gutter:next-hunk
-  "gr" 'git-gutter:revert-hunk
-  "ga" 'git-gutter:stage-hunk
+  ;; "gd" 'git-gutter:popup-diff
+  ;; "gp" 'git-gutter:previous-hunk
+  ;; "gn" 'git-gutter:next-hunk
+  ;; "gr" 'git-gutter:revert-hunk
+  ;; "ga" 'git-gutter:stage-hunk
   "gb" 'magit-blame
   "gc" 'magit-checkout-file
   "gL" 'magit-log
   "gs" 'magit-status
   "w"  'delete-window
   "d"  'kill-buffer-and-window'
-  "nn" 'neotree-toggle
+  "nn" 'neotree-projectile-action
   "nf" 'neotree-find
   "gk" 'windmove-up
   "gj" 'windmove-down
@@ -215,7 +223,6 @@
   "gh" 'windmove-left
   "vs" 'split-v-and-move
   "hs" 'split-h-and-move
-  "mm" 'switch-window
   "s" 'ispell-word
   "=" 'balance-windows
   "ff" 'delete-other-windows
@@ -223,7 +230,12 @@
   "fr" 'flycheck-first-error
   "fn" 'flycheck-next-error
   "fp" 'flycheck-previous-error
-  "ar" 'align-regexp
+  "aw" 'align-whitespace
+  "ap" 'alchemist-help-search-at-point
+  "ac" 'alchemist-mix-compile
+  "ad" 'alchemist-goto-definition-at-point
+  "mf" 'alchemist-mix-test-file
+  "mp" 'alchemist-mix-test-at-point
   "ll" (lambda () (interactive) (enlarge-window-horizontally 30))
   "hh" (lambda () (interactive) (enlarge-window-horizontally -30))
   "x" 'helm-M-x)
@@ -314,16 +326,16 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================
-;; Git Gutter
-(global-git-gutter-mode 1)
-(custom-set-variables
- '(git-gutter:hide-gutter t))
+;; ;; Git Gutter
+;; (global-git-gutter-mode 1)
+;; (custom-set-variables
+;;  '(git-gutter:hide-gutter t))
 
-(add-hook 'magit-post-refresh-hook
-          #'git-gutter:update-all-windows)
+;; (add-hook 'magit-post-refresh-hook
+;;           #'git-gutter:update-all-windows)
 
-(add-hook 'magit-refresh-buffer-hook
-          #'git-gutter:update-all-windows)
+;; (add-hook 'magit-refresh-buffer-hook
+;;           #'git-gutter:update-all-windows)
 
 ;; =============================================================================
 ;; ember-mode
@@ -395,20 +407,13 @@ directory to make multiple eshell windows easier."
 
 (defun tab-indent-or-complete ()
   (interactive)
-  (cond
-   ((minibufferp)
-    (minibuffer-complete))
-   (t
-    (indent-for-tab-command)
+  (if (minibufferp)
+      (minibuffer-complete)
     (if (or (not yas-minor-mode)
-        (null (do-yas-expand)))
-    (if (check-expansion)
-        (progn
-          (company-manual-begin)
-          (if (null company-candidates)
-          (progn
-            (company-abort)
-            (indent-for-tab-command)))))))))
+            (null (do-yas-expand)))
+        (if (check-expansion)
+            (company-complete-common)
+          (indent-for-tab-command)))))
 
 (defun tab-complete-or-next-field ()
   (interactive)
@@ -448,35 +453,35 @@ directory to make multiple eshell windows easier."
 (define-key yas-minor-mode-map [tab] nil)
 (define-key yas-minor-mode-map (kbd "TAB") nil)
 
-(define-key yas-keymap [tab] 'tab-complete-or-next-field)
-(define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+;; (define-key yas-keymap [tab] 'tab-complete-or-next-field)
+;; (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
 (define-key yas-keymap [(control tab)] 'yas-next-field)
 
 ;; =============================================================================
 ;; fly check
 ;; =============================================================================
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'js-mode-hook #'flycheck-mode)
-(add-hook 'web-mode-hook #'flycheck-mode)
-(add-hook 'ruby-mode-hook #'flycheck-mode)
-(add-hook 'elixir-mode-hook #'flycheck-mode)
-(setq flycheck-display-errors-function 'flycheck-display-error-messages-unless-error-list)
-(setq flycheck-display-errors-delay 0)
-(setq flycheck-check-syntax-automatically '(save mode-enabled))
-(setq flycheck-standard-error-navigation nil)
-(setq flycheck-indication-mode 'left-fringe)
-;; remove useless warnings
-(with-eval-after-load 'flycheck
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+;; (require 'flycheck)
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
+;; (add-hook 'js-mode-hook #'flycheck-mode)
+;; (add-hook 'web-mode-hook #'flycheck-mode)
+;; (add-hook 'ruby-mode-hook #'flycheck-mode)
+;; (add-hook 'elixir-mode-hook #'flycheck-mode)
+;; (setq flycheck-display-errors-function 'flycheck-display-error-messages-unless-error-list)
+;; (setq flycheck-display-errors-delay 0)
+;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+;; (setq flycheck-standard-error-navigation nil)
+;; (setq flycheck-indication-mode 'left-fringe)
+;; ;; remove useless warnings
+;; (with-eval-after-load 'flycheck
+;;   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
-(defun flycheck-toggle ()
-  (interactive)
-  (if (= (length flycheck-current-errors) 0)
-    (progn
-      (message "syntax checking...")
-      (flycheck-buffer))
-    (flycheck-clear)))
+;; (defun flycheck-toggle ()
+;;   (interactive)
+;;   (if (= (length flycheck-current-errors) 0)
+;;     (progn
+;;       (message "syntax checking...")
+;;       (flycheck-buffer))
+;;     (flycheck-clear)))
 ;; =============================================================================
 ;; Evil Bindings
 ;; =============================================================================
@@ -609,9 +614,9 @@ directory to make multiple eshell windows easier."
 ;; ;; If you would like to use git-gutter.el and linum-mode
 ;; (git-gutter:linum-setup)
 
-(require 'smooth-scrolling)
-(smooth-scrolling-mode t)
-(setq smooth-scroll-margin 3)
+;; (require 'smooth-scrolling)
+;; (smooth-scrolling-mode t)
+;; (setq smooth-scroll-margin 3)
 ;; Delay updates to give Emacs a chance for other changes
 (setq linum-delay t)
 (setq redisplay-dont-pause t)
@@ -753,6 +758,9 @@ directory to make multiple eshell windows easier."
 (add-hook 'web-mode-hook (lambda ()
                            (emmet-mode t)
                            (setq evil-shift-width 2)
+                           (setq web-mode-markup-indent-offset 2)
+                           (setq web-mode-css-indent-offset 2)
+                           (setq web-mode-code-indent-offset 2)
                            (setq tab-width 2)))
 
 
@@ -827,6 +835,13 @@ one more than the current position."
 ;; end highlight hack
 ;;==============================================================================
 
+;;==============================================================================
+;; erlang-mode
+;;==============================================================================
+(add-to-list 'load-path  "/usr/local/lib/erlang/lib/tools-2.11/emacs")
+(setq erlang-root-dir "/usr/local/lib/erlang")
+(setq exec-path (cons "/usr/local/lib/erlang/bin" exec-path))
+(require 'erlang-start)
 
 ;; Enable syntax highlighting in markdown
 ;; (require 'mmm-mode)
